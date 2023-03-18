@@ -177,6 +177,9 @@ function emailFieldValidation() {
 }
 
 function birthdateFieldValidation() {
+
+  birthDate.max = new Date().toLocaleDateString('fr-ca');
+
   if (birthDate.value === "") {
     isBirthdateValid = false;
     return errorHandler(birthDate, errorMessages.birthdateMissing);
