@@ -27,6 +27,7 @@ const submitBtn = document.querySelectorAll(".btn-submit");
 let isFormValid = false;
 const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const regexNames = /^[A-Za-z][A-Za-z'-]+([ A-Za-z][A-Za-z'-]+)*/;
+const regexTournaments = /[0-9\/]+/;
 const errorMessages = {
   emptyField: "Ce champ doit être rempli.",
   nameLength: "Le nom doit contenir au moins 2 lettres.",
@@ -84,7 +85,14 @@ firstName.addEventListener("change", () => nameFieldsValidation(firstName));
 lastName.addEventListener("change", () => nameFieldsValidation(lastName));
 email.addEventListener("change", () => emailFieldValidation());
 birthDate.addEventListener("change", () => birthdateFieldValidation());
-tournaments.addEventListener("change", () => tournamentsFieldValidation());
+
+tournaments.addEventListener("keypress", (event) => {
+  if (!regexTournaments.test(event.key)) {
+    event.preventDefault();
+  }
+});
+
+tournaments.addEventListener("change", (e) => tournamentsFieldValidation(e));
 
 cities.forEach((city) =>
   city.addEventListener("change", () => citiesValidation())
@@ -188,7 +196,7 @@ function birthdateFieldValidation() {
 
 function tournamentsFieldValidation() {
   
-  if (!tournaments.value.match(/^[0-9]+$/) || tournaments.value.match(/\+/)) {
+  if (!tournaments.value.match(regexTournaments)) {
     isTournamentsValid = false;
     return errorHandler(tournaments, errorMessages.tournamentsValue);
   }
