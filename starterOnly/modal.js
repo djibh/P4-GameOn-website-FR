@@ -115,7 +115,6 @@ function hideModal() {
   form.reset();
 }
 
-
 // set html attributes when error in input
 function errorHandler(input, text) {
   input.parentElement.setAttribute("data-error", text);
@@ -161,7 +160,6 @@ function nameFieldsValidation(input) {
   removeDataAttribute(input);
 }
 
-
 function emailFieldValidation() {
   if (email.value === "") {
     isEmailValid = false;
@@ -177,8 +175,7 @@ function emailFieldValidation() {
 }
 
 function birthdateFieldValidation() {
-
-  birthDate.max = new Date().toLocaleDateString('fr-ca');
+  birthDate.max = new Date().toLocaleDateString("fr-ca");
 
   if (birthDate.value === "") {
     isBirthdateValid = false;
@@ -190,10 +187,12 @@ function birthdateFieldValidation() {
 }
 
 function tournamentsFieldValidation() {
-  if (tournaments.value === "" || isNaN(tournaments.value)) {
+  
+  if (!tournaments.value.match(/^[0-9]+$/) || tournaments.value.match(/\+/)) {
     isTournamentsValid = false;
     return errorHandler(tournaments, errorMessages.tournamentsValue);
   }
+
   isTournamentsValid = true;
   removeDataAttribute(tournaments);
 }
@@ -225,19 +224,14 @@ function termsValidation() {
 }
 
 function formValidation() {
-  if (
+  isFormValid =
     isFirstNameValid &&
     isLastNameValid &&
     isEmailValid &&
     isBirthdateValid &&
     isTournamentsValid &&
     isCitiesValid &&
-    isTermsValid
-  ) {
-    isFormValid = true;
-  } else {
-    isFormValid = false;
-  }
+    isTermsValid;
 }
 
 function createConfirmation() {
@@ -258,5 +252,3 @@ function createConfirmation() {
 
   modalBody.appendChild(confirmContainer);
 }
-
-
