@@ -156,6 +156,7 @@ main {
   display: grid;
   place-content: center;
   height: 80vh;
+  max-height: 550px;
 }
 
 label {
@@ -489,10 +490,10 @@ footer {
 }
 
 @media screen and (max-width: 990px) {
-.header-logo img{
-  width: 80%;
-  padding: 10px 0;
-}
+  .header-logo img{
+    width: 80%;
+    padding: 10px 0;
+  }
 
   .hero-section {
     display: flex;
@@ -542,6 +543,13 @@ footer {
     margin: auto;
     height: 100%;
     border-radius: 0;
+  }
+
+  .confirm-message {
+    display: grid;
+    place-content: center;
+    /* height: 80vh; */
+    max-height: 700px;
   }
 
   .header-logo img{

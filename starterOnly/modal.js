@@ -27,6 +27,7 @@ const submitBtn = document.querySelectorAll(".btn-submit");
 let isFormValid = false;
 const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const regexNames = /^[A-Za-z][A-Za-z'-]+([ A-Za-z][A-Za-z'-]+)*/;
+const regexTournaments = /[0-9\/]+/;
 const errorMessages = {
   emptyField: "Ce champ doit être rempli.",
   nameLength: "Le nom doit contenir au moins 2 lettres.",
@@ -71,11 +72,27 @@ async function validate() {
   formValidation();
 }
 
+function confirmationScreen() {
+  if (!isFormValid) return;
+
+  form.style.display = "none";
+  createConfirmation();
+  removeAllDataAttributes(formData);
+}
+
+// listeners for on change message update
 firstName.addEventListener("change", () => nameFieldsValidation(firstName));
 lastName.addEventListener("change", () => nameFieldsValidation(lastName));
 email.addEventListener("change", () => emailFieldValidation());
 birthDate.addEventListener("change", () => birthdateFieldValidation());
-tournaments.addEventListener("change", () => tournamentsFieldValidation());
+
+tournaments.addEventListener("keypress", (event) => {
+  if (!regexTournaments.test(event.key)) {
+    event.preventDefault();
+  }
+});
+
+tournaments.addEventListener("change", (e) => tournamentsFieldValidation(e));
 
 cities.forEach((city) =>
   city.addEventListener("change", () => citiesValidation())
@@ -90,7 +107,7 @@ terms.addEventListener("change", () => termsValidation());
 function showModal() {
   modalbg.style.display = "block";
 
-  // if validation already succeeded once form is set to display none
+  // if validation already succeeded once, form is set to display none
   if (form.style.display == "none") {
     form.style.display = "block";
   }
@@ -99,30 +116,36 @@ function showModal() {
 // hide modal and clear inputs
 function hideModal() {
   modalbg.style.display = "none";
-  removeAllDataAttributes(formData); // FIXME - obligé avec form.reset() ? Ou doublon ?
+  removeAllDataAttributes(formData);
   modalBody.removeChild(
     document.querySelector(".confirm-message").parentElement
   );
   form.reset();
 }
 
+// set html attributes when error in input
 function errorHandler(input, text) {
   input.parentElement.setAttribute("data-error", text);
   input.parentElement.setAttribute("data-error-visible", "true");
   return;
 }
 
+// remove html attributes when no error in input
 function removeDataAttribute(input) {
   input.parentElement.removeAttribute("data-error");
   input.parentElement.removeAttribute("data-error-visible");
 }
 
+// remove all html data attributes at once
 function removeAllDataAttributes(data) {
   for (let i = 0; i < data.length; i++) {
     data[i].removeAttribute("data-error");
     data[i].removeAttribute("data-error-visible");
   }
 }
+
+// Validations for all fields ///
+////////////////////////////////
 
 function nameFieldsValidation(input) {
   if (input.value === "") {
@@ -160,6 +183,8 @@ function emailFieldValidation() {
 }
 
 function birthdateFieldValidation() {
+  birthDate.max = new Date().toLocaleDateString("fr-ca");
+
   if (birthDate.value === "") {
     isBirthdateValid = false;
     return errorHandler(birthDate, errorMessages.birthdateMissing);
@@ -170,10 +195,12 @@ function birthdateFieldValidation() {
 }
 
 function tournamentsFieldValidation() {
-  if (tournaments.value === "" || isNaN(tournaments.value)) {
+  
+  if (!tournaments.value.match(regexTournaments)) {
     isTournamentsValid = false;
     return errorHandler(tournaments, errorMessages.tournamentsValue);
   }
+
   isTournamentsValid = true;
   removeDataAttribute(tournaments);
 }
@@ -205,19 +232,14 @@ function termsValidation() {
 }
 
 function formValidation() {
-  if (
+  isFormValid =
     isFirstNameValid &&
     isLastNameValid &&
     isEmailValid &&
     isBirthdateValid &&
     isTournamentsValid &&
     isCitiesValid &&
-    isTermsValid
-  ) {
-    isFormValid = true;
-  } else {
-    isFormValid = false;
-  }
+    isTermsValid;
 }
 
 function createConfirmation() {
@@ -237,12 +259,4 @@ function createConfirmation() {
   confirmContainer.appendChild(confirmButton);
 
   modalBody.appendChild(confirmContainer);
-}
-
-function confirmationScreen() {
-  if (!isFormValid) return;
-
-  form.style.display = "none";
-  createConfirmation();
-  removeAllDataAttributes(formData);
 }
